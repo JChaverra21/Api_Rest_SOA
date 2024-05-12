@@ -10,12 +10,24 @@ export const requireToken = (req, res, next) => {
     token = token.split(" ")[1];
 
     // Devuelve la información del token
-    const payload = jwt.verify(token, process.env.JWT_SECRET);
-    console.log(payload);
+    const { uid } = jwt.verify(token, process.env.JWT_SECRET);
+
+    req.uid = uid;
 
     next();
   } catch (error) {
-    console.log(error);
-    return res.status(401).json({ error: error.message });
+    console.log(error.message);
+
+    const TokenVerificationError = {
+      "invalid signature": "La firma del token no es válida",
+      "jwt expired": "El token ha expirado",
+      "invalid token": "El token no es válido",
+      "No Bearer": "Utiliza formato Bearer",
+      "jwt malformed": "El token no tiene el formato correcto",
+    };
+
+    return res
+      .status(401)
+      .send({ error: TokenVerificationError[error.message] });
   }
 };
