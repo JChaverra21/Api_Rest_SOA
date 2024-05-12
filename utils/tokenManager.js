@@ -16,7 +16,9 @@ export const generateRefreshToken = (uid, res) => {
   const expiresIn = 60 * 60 * 24 * 30; // 30 días
 
   try {
-    const refreshToken = jwt.sign({ uid }, process.env.JWT_REFRESH, { expiresIn });
+    const refreshToken = jwt.sign({ uid }, process.env.JWT_REFRESH, {
+      expiresIn,
+    });
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: !(process.env.MODO === "developer"),
@@ -28,15 +30,10 @@ export const generateRefreshToken = (uid, res) => {
   }
 };
 
-export const errorsValidateToken = (token) => {
-  switch (error) {
-    case "invalid signature":
-      return "La firma del token no es válida";
-    case "jwt expired":
-      return "El token ha expirado";
-    case "invalid token":
-      return "El token no es válido";
-    default:
-      return error;
-  }
+export const tokenVerificationErrors = {
+  "invalid signature": "La firma del JWT no es válida",
+  "jwt expired": "JWT expirado",
+  "invalid token": "Token no válido",
+  "No Bearer": "Utiliza formato Bearer",
+  "jwt malformed": "JWT formato no válido",
 };
